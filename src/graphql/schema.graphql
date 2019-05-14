@@ -1,0 +1,29 @@
+type Chat {
+    id: ID!
+    title: String
+    messages: [Message]
+}
+
+type Message {
+    id: ID!
+    author: User
+    text: String
+}
+
+type User {
+    id: ID!
+    nick: String!
+}
+
+type Query {
+  getChats: [Chat]!
+  getChat(id: ID!): Chat
+}
+
+type Mutation {
+    createChat(createChatInput: CreateChatInput): Chat
+}
+
+input CreateChatInput {
+    title: String
+}
