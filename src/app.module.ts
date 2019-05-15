@@ -12,6 +12,6 @@ import { ChatModule } from './chat/chat.module';
         path: join(process.cwd(), 'src/types.ts'),
       },
     }),
-  ]
+  ],
 })
 export class AppModule {}
