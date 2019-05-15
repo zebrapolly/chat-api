@@ -1,4 +1,4 @@
-import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Mutation, Query, Resolver, Args } from '@nestjs/graphql';
 import { ChatService } from './chat.service';
 
 @Resolver('Chat')
@@ -12,7 +12,7 @@ export class ChatResolver {
   }
 
   @Mutation('createChat')
-  async createChat(title: string) {
+  async createChat(@Args('title') title: string) {
     return this.chatService.createChat(title);
   }
 }

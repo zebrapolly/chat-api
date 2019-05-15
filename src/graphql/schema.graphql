@@ -1,6 +1,8 @@
 type Chat {
     id: ID!
     title: String
+    lastMessage: Message
+    participants: [User]
     messages: [Message]
 }
 
@@ -21,9 +23,5 @@ type Query {
 }
 
 type Mutation {
-    createChat(createChatInput: CreateChatInput): Chat
-}
-
-input CreateChatInput {
-    title: String
+    createChat(title: String): Chat
 }
