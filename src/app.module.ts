@@ -8,9 +8,6 @@ import { ChatModule } from './chat/chat.module';
     ChatModule,
     GraphQLModule.forRoot({
       typePaths: ['./**/**.graphql'],
-      definitions: {
-        path: join(process.cwd(), 'src/types.ts'),
-      },
     }),
   ],
 })

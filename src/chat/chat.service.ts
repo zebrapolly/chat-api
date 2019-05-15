@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Chat } from 'src/types';
+import { Chat } from '../../../typings/types';
 import { createUUID } from '../utils/utils';
 
 @Injectable()
@@ -8,7 +8,26 @@ export class ChatService {
     {
       id: 'AAA',
       title: 'testChat',
-      messages: [],
+      lastMessage: {
+        id: 'eee',
+        text: 'rwerwdsf',
+      },
+    },
+    {
+      id: 'AAA1',
+      title: 'testChat133',
+      lastMessage: {
+        id: 'eee',
+        text: 'rwerwdsf',
+      },
+    },
+    {
+      id: 'AAA2',
+      title: 'testChat2',
+      lastMessage: {
+        id: 'eee',
+        text: 'rwerwdsf',
+      },
     },
   ];
 
