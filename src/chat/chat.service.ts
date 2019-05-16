@@ -42,7 +42,8 @@ export class ChatService {
       lastMessage: {
           id: createUUID(),
           text: `Chat ${title} created`,
-        },
+      },
+      messages: [],
     };
     this.chats.push(chat);
     return chat;

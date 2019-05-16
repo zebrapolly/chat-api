@@ -8,6 +8,7 @@ import { ChatModule } from './chat/chat.module';
     ChatModule,
     GraphQLModule.forRoot({
       typePaths: ['./**/**.graphql'],
+      installSubscriptionHandlers: true,
     }),
   ],
 })

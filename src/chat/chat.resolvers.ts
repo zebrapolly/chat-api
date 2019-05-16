@@ -1,6 +1,8 @@
-import { Mutation, Query, Resolver, Args } from '@nestjs/graphql';
+import { Mutation, Query, Resolver, Args, Subscription } from '@nestjs/graphql';
 import { ChatService } from './chat.service';
+import { PubSub } from 'graphql-subscriptions';
 
+const pubSub = new PubSub();
 @Resolver('Chat')
 export class ChatResolver {
   constructor(private readonly chatService: ChatService) {}
@@ -13,6 +15,13 @@ export class ChatResolver {
 
   @Mutation('createChat')
   async createChat(@Args('title') title: string) {
-    return this.chatService.createChat(title);
+    const chat = this.chatService.createChat(title);
+    pubSub.publish('chatUpdated', {chatUpdated: chat});
+    return chat;
+  }
+
+  @Subscription('chatUpdated')
+  chatUpdated() {
+    return pubSub.asyncIterator('chatUpdated');
   }
 }

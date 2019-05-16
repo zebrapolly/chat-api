@@ -25,3 +25,7 @@ type Query {
 type Mutation {
     createChat(title: String): Chat
 }
+
+type Subscription {
+  chatUpdated: Chat
+}
