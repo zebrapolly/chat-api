@@ -33,6 +33,7 @@
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.3.3",
+    "subscriptions-transport-ws": "^0.9.16",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
