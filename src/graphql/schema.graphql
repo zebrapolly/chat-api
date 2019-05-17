@@ -10,6 +10,7 @@ type Message {
     id: ID!
     author: User
     text: String
+    timestamp: String
 }
 
 type User {
@@ -22,9 +23,17 @@ type Query {
   getChat(id: ID!): Chat
 }
 
+
+input MessageInput {
+  chatId: ID
+  authorId: String
+  text: String
+}
+
 type Mutation {
   createChat(title: String): Chat
   deleteChat(id: ID): Chat
+  createMessage(messageInput: MessageInput): Message
 }
 
 type Subscription {

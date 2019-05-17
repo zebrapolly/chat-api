@@ -1,7 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { Chat } from '../../../typings/types';
+import { Chat, Message, MessageInput } from '../../../typings/types';
 import { createUUID } from '../utils/utils';
-
 @Injectable()
 export class ChatService {
   chats: Chat[] = [
@@ -12,6 +11,7 @@ export class ChatService {
         id: 'eee',
         text: 'rwerwdsf',
       },
+      messages: [],
     },
     {
       id: 'AAA1',
@@ -20,6 +20,7 @@ export class ChatService {
         id: 'eee',
         text: 'rwerwdsf',
       },
+      messages: [],
     },
     {
       id: 'AAA2',
@@ -28,8 +29,25 @@ export class ChatService {
         id: 'eee',
         text: 'rwerwdsf',
       },
+      messages: [],
     },
   ];
+
+  createMessage({chatId, authorId, text}: MessageInput): Message {
+    const chat = this.findChatById(chatId);
+    const message: Message = {
+      id: createUUID(),
+      author: {
+        id: authorId,
+        nick: 'mock',
+      },
+      timestamp: new Date().toISOString(),
+      text,
+    };
+    chat.messages.push(message);
+    chat.lastMessage = message;
+    return message;
+  }
 
   getAll(): Chat[] {
     return this.chats;
@@ -58,6 +76,15 @@ export class ChatService {
       return false;
       })
     );
+    if (chat) {
+      return chat;
+    } else {
+      throw new HttpException('Chat not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  findChatById(id: string): Chat {
+    const chat = this.chats.find(item => (item.id === id));
     if (chat) {
       return chat;
     } else {
