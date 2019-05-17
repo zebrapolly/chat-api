@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Chat } from '../../../typings/types';
 import { createUUID } from '../utils/utils';
 
@@ -47,5 +47,21 @@ export class ChatService {
     };
     this.chats.push(chat);
     return chat;
+  }
+
+  deleteChat(id: string): Chat {
+    const chat = (this.chats.find((item, index) => {
+      if (item.id === id) {
+        this.chats.splice(index, 1);
+        return true;
+      }
+      return false;
+      })
+    );
+    if (chat) {
+      return chat;
+    } else {
+      throw new HttpException('Chat not found', HttpStatus.NOT_FOUND);
+    }
   }
 }

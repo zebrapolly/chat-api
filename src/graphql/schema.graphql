@@ -23,9 +23,21 @@ type Query {
 }
 
 type Mutation {
-    createChat(title: String): Chat
+  createChat(title: String): Chat
+  deleteChat(id: ID): Chat
 }
 
 type Subscription {
-  chatUpdated: Chat
+  chatUpdated: SubscriptionInput
+}
+
+type SubscriptionInput {
+    chat: Chat
+    type: ChatsUpdateType
+}
+
+enum ChatsUpdateType {
+  DELETED
+  UPDATED
+  CREATED
 }
