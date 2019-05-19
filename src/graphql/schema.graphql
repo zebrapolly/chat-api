@@ -37,12 +37,19 @@ type Mutation {
 }
 
 type Subscription {
-  chatUpdated: SubscriptionInput
+  chatsUpdated: ChatsSubscription
+  messagesUpdated(id: ID): MessagesSubscription
 }
 
-type SubscriptionInput {
-    chat: Chat
-    type: ChatsUpdateType
+type ChatsSubscription {
+  chat: Chat
+  type: ChatsUpdateType
+}
+
+type MessagesSubscription {
+  chatId: ID
+  message: Message
+  type: ChatsUpdateType
 }
 
 enum ChatsUpdateType {

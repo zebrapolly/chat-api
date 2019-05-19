@@ -1,8 +1,9 @@
 import { Mutation, Query, Resolver, Args, Subscription } from '@nestjs/graphql';
 import { ChatService } from './chat.service';
 import { PubSub } from 'graphql-subscriptions';
-import {ChatsUpdateType, MessageInput} from '../../../typings/types';
+import {ChatsUpdateType, MessageInput, MessagesSubscription} from '../../../typings/types';
 const pubSub = new PubSub();
+
 @Resolver('Chat')
 export class ChatResolver {
   constructor(private readonly chatService: ChatService) {}
@@ -13,13 +14,19 @@ export class ChatResolver {
     return chats;
   }
 
+  @Query('getChat')
+  async getChat(@Args('id') id: string) {
+    const chat = await this.chatService.findChatById(id);
+    return chat;
+  }
+
   @Mutation('createChat')
   async createChat(@Args('title') title: string) {
     const chat = this.chatService.createChat(title);
     pubSub.publish(
-      'chatUpdated',
+      'chatsUpdated',
       {
-        chatUpdated: {
+        chatsUpdated: {
           chat,
           type: ChatsUpdateType.CREATED,
         },
@@ -33,11 +40,21 @@ export class ChatResolver {
     const message = this.chatService.createMessage(messageInput);
     const chat = this.chatService.findChatById(messageInput.chatId);
     pubSub.publish(
-      'chatUpdated',
+      'chatsUpdated',
       {
-        chatUpdated: {
+        chatsUpdated: {
           chat,
           type: ChatsUpdateType.UPDATED,
+        },
+      },
+    );
+    pubSub.publish(
+      'messagesUpdated',
+      {
+        messagesUpdated: {
+          chatId: chat.id,
+          message,
+          type: ChatsUpdateType.CREATED,
         },
       },
     );
@@ -48,9 +65,9 @@ export class ChatResolver {
   async deleteChat(@Args('id') id: string) {
     const deletedChat = this.chatService.deleteChat(id);
     pubSub.publish(
-      'chatUpdated',
+      'chatsUpdated',
       {
-        chatUpdated: {
+        chatsUpdated: {
           chat: deletedChat,
           type: ChatsUpdateType.DELETED,
         },
@@ -59,8 +76,17 @@ export class ChatResolver {
     return deletedChat;
   }
 
-  @Subscription('chatUpdated')
-  chatUpdated() {
-    return pubSub.asyncIterator(['chatUpdated']);
+  @Subscription('chatsUpdated')
+  chatsUpdated() {
+    return pubSub.asyncIterator(['chatsUpdated']);
+  }
+
+  @Subscription('messagesUpdated', {
+    filter: (payload: any, variables: any) => payload.messagesUpdated.chatId === variables.id,
+
+  })
+  chatUpdated(@Args('id') id: string) {
+    console.log('Subscription!!!!!!', id, pubSub);
+    return pubSub.asyncIterator(['messagesUpdated']);
   }
 }
