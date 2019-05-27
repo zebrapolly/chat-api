@@ -2,11 +2,14 @@ import { Mutation, Query, Resolver, Args, Subscription } from '@nestjs/graphql';
 import { ChatService } from './chat.service';
 import { PubSub } from 'graphql-subscriptions';
 import {ChatsUpdateType, MessageInput, MessagesSubscription} from '../../../typings/types';
-const pubSub = new PubSub();
+import { Inject } from '@nestjs/common';
 
 @Resolver('Chat')
 export class ChatResolver {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    @Inject('PUB_SUB')private readonly subProvider: PubSub
+    ) {}
 
   @Query('getChats')
   async getChats() {
@@ -23,7 +26,7 @@ export class ChatResolver {
   @Mutation('createChat')
   async createChat(@Args('title') title: string) {
     const chat = this.chatService.createChat(title);
-    pubSub.publish(
+    this.subProvider.publish(
       'chatsUpdated',
       {
         chatsUpdated: {
@@ -39,7 +42,7 @@ export class ChatResolver {
   async createMessage(@Args('messageInput') messageInput: MessageInput) {
     const message = this.chatService.createMessage(messageInput);
     const chat = this.chatService.findChatById(messageInput.chatId);
-    pubSub.publish(
+    this.subProvider.publish(
       'chatsUpdated',
       {
         chatsUpdated: {
@@ -48,7 +51,7 @@ export class ChatResolver {
         },
       },
     );
-    pubSub.publish(
+    this.subProvider.publish(
       'messagesUpdated',
       {
         messagesUpdated: {
@@ -64,7 +67,7 @@ export class ChatResolver {
   @Mutation('deleteChat')
   async deleteChat(@Args('id') id: string) {
     const deletedChat = this.chatService.deleteChat(id);
-    pubSub.publish(
+    this.subProvider.publish(
       'chatsUpdated',
       {
         chatsUpdated: {
@@ -78,7 +81,7 @@ export class ChatResolver {
 
   @Subscription('chatsUpdated')
   chatsUpdated() {
-    return pubSub.asyncIterator(['chatsUpdated']);
+    return this.subProvider.asyncIterator(['chatsUpdated']);
   }
 
   @Subscription('messagesUpdated', {
@@ -86,7 +89,7 @@ export class ChatResolver {
 
   })
   chatUpdated(@Args('id') id: string) {
-    console.log('Subscription!!!!!!', id, pubSub);
-    return pubSub.asyncIterator(['messagesUpdated']);
+    console.log('Subscription!!!!!!', id, this.subProvider);
+    return this.subProvider.asyncIterator(['messagesUpdated']);
   }
 }

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { join } from 'path';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
@@ -10,6 +9,6 @@ import { ChatModule } from './chat/chat.module';
       typePaths: ['./**/**.graphql'],
       installSubscriptionHandlers: true,
     }),
-  ],
+  ]
 })
 export class AppModule {}
